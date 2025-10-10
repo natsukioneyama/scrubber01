@@ -1,0 +1,144 @@
+:root{
+  --bg:#a80000;
+  --scrub-size: clamp(260px, 60vmin, 380px);
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; margin:0; }
+
+/* vhを使って純粋に中央揃え */
+body{
+  background: var(--bg);
+  height: 100vh;           /* 画面の見えている高さ */
+  overflow: hidden;        /* スクロール防止（不要なら外してOK） */
+}
+
+/* スクラバー本体 */
+#scrubber{
+  position: fixed;
+  z-index: 10;         /* 画像を前面に */
+  top: 50%; left: 50%;
+  transform: translate(-50%, calc(-50% - 50px)); /* あなたの調整を維持 */
+  width: var(--scrub-size);
+  height: var(--scrub-size);
+  display: grid;
+  place-items: center;
+  user-select: none;
+  cursor: ew-resize;
+}
+
+#scrub-area{
+  position: fixed;
+  inset: 0;
+  z-index: 15;          /* 画像(#scrubber)より下でもOKだが、イベントを拾うなら上で */
+  touch-action: none;  /* スワイプでブラウザがスクロールしないように */
+  cursor: ew-resize;
+  background: transparent;
+}
+
+
+#frame{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ローディング */
+.loading{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  opacity: .7;
+  letter-spacing: .08em;
+  font-size: clamp(12px, 2.2vmin, 14px);
+}
+.loading.hidden{ display:none; }
+
+#info-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 10px; /* 画面下からの距離 */
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #ffffff;
+  border-radius: 50%;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-size: 15px;
+  line-height: 18px;
+  text-align: center;
+  text-decoration: none;
+  transition: 0.3s ease;
+  opacity: 0.7;
+
+  z-index: 30;         
+  pointer-events: auto;
+}
+
+#info-btn:hover {
+  opacity: 1;
+  color: white;
+}
+
+/* Info ページ全体 */
+body.info {
+  background: #a80000;
+  color: #fff;
+  font-family: "Times New Roman", serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* コンテンツボックス */
+.info-box {
+  text-align: center;
+  line-height: 1.8;
+  letter-spacing: 0.2px;
+  transform: translateY(-40px); 
+}
+
+/* タイトル */
+.info-box h1 {
+  font-size: 1rem;     /* 少しだけ大きく */
+  margin-bottom: 5em;
+}
+
+
+/* テキスト */
+.info-box p {
+  font-size: 1rem;       /* 全体のベースサイズ */
+  margin: 0.3em 0;
+}
+
+/* 戻るリンク */
+.info-box a {
+  color: #fff;
+  text-decoration: none;      /* ← 下線を消す */
+  transition: opacity 0.3s ease;
+}
+
+.info-box a:hover {
+  opacity: 0.6;
+}
+
+/* 「← Back」だけ下線を残す */
+.info-box a[href="index.html"] {
+  margin-top: 5em;
+  display: inline-block;
+  font-size: 0.95rem;
+}
+
+
+
+
+
+
+
+
