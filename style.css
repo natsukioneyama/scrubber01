@@ -12,7 +12,7 @@
 @media (max-width: 768px) and (pointer: coarse){
   :root{
     /* 下部の安全域も考慮して縦方向の上限でキャップ */
-    --ui-bottom: calc(20px + env(safe-area-inset-bottom));
+    --ui-bottom: calc(22px + env(safe-area-inset-bottom));
     --frame-h: min(92vmin, calc(100svh - 140px - var(--ui-bottom)));
     /* ↑ 92vmin で基本大きくしつつ、画面の実高(svh)から
        アイコン等の余白(約140px)を引いた値を上限にする */
