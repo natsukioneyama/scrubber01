@@ -1,6 +1,6 @@
 :root{
   --bg:#a80000;
-  --scrub-size: clamp(260px, 60vmin, 380px);
+  --scrub-size: clamp(350px, 60vmin, 380px);
 }
 
 *{ box-sizing:border-box; }
