@@ -1,7 +1,12 @@
 :root{
   --bg:#a80000;
-   --frame-h: clamp(400px, 60vmin, 600px);
+  --frame-h: clamp(400px, 60vmin, 600px);
+  overflow-x: clip; 
 }
+@supports (overflow: clip) {
+  html, body { overflow: clip; }  /* 対応端末ではより強力に */
+}
+
 *{ box-sizing:border-box; }
 
 @media (max-width: 768px) and (pointer: coarse){
