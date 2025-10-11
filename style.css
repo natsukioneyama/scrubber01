@@ -1,0 +1,154 @@
+:root{
+  --bg:#a80000;
+  --scrub-size: min(60vmin, 600px);
+  --frame-h: clamp(370px, 60vmin, 400px);
+}
+@media (max-width: 768px){
+  :root{
+    --ui-bottom: calc(20px + env(safe-area-inset-bottom));
+    --scrub-size: min(96vmin, calc(100svh - 140px - var(--ui-bottom)));
+  }
+}
+
+@media (max-width: 450px) and (min-aspect-ratio: 10/19){
+  :root{
+    --scrub-size: min(96vmin, calc(100svh - 160px - var(--ui-bottom)));
+  }
+}
+
+*{ box-sizing:border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;          
+  overscroll-behavior: none; 
+  -webkit-overflow-scrolling: auto;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body{
+  background: var(--bg);
+  height: 100vh;           
+  overflow: hidden;       
+}
+
+
+#scrubber{
+  position: fixed;
+  z-index: 10;         
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);   
+  display: grid;
+  place-items: center;
+  user-select: none;
+  cursor: ew-resize;
+  touch-action: none;         
+  -webkit-user-select: none;
+}
+#frame { max-height: var(--frame-h);  max-width: 92vw; height:auto; width:auto; }
+
+
+.frame{
+  /* ここが “一定に見える高さ” の肝 */
+  height: var(--frame-h);
+  max-width: 92vw;          
+  display: grid;
+  place-items: center;       
+}
+.frame img{
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;       
+}
+
+
+.loading{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  opacity: .7;
+  letter-spacing: .08em;
+  font-size: clamp(12px, 2.2vmin, 14px);
+}
+.loading.hidden{ display:none; }
+
+#info-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 20px; 
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #ffffff;
+  border-radius: 50%;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-size: 15px;
+  line-height: 18px;
+  text-align: center;
+  text-decoration: none;
+  transition: 0.3s ease;
+  opacity: 0.7;
+  z-index: 30;         
+  pointer-events: auto;
+}
+
+#info-btn:hover {
+  opacity: 1;
+  color: white;
+}
+
+body.info {
+  background: #a80000;
+  color: #fff;
+  font-family: "Times New Roman", serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.info-box {
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.info-box h1 {
+  font-size: 1.3rem;     
+  margin-bottom: 0.5em;
+}
+
+.info-box p {
+  font-size: 0.9rem;       
+  margin: 0.3em 0;
+}
+
+.info-box a {
+  color: #fff;
+  text-decoration: none;      
+  transition: opacity 0.3s ease;
+}
+
+.info-box a:hover {
+  opacity: 0.6;
+}
+
+.info-box a[href="index.html"] {
+  margin-top: 5rem;
+  display: inline-block;
+  font-size: 0.95rem;
+}
+
+
+
+
+
+
+
+
