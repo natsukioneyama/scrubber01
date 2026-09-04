@@ -1,0 +1,100 @@
+:root{
+  --bg : #d20606; 
+  --frame-h: clamp(400px, 60vmin, 600px);
+  overflow-x: clip; 
+   --font-ui: "neue-haas-unica", "Helvetica Neue", Arial, system-ui, -apple-system, sans-serif; 
+}
+@supports (overflow: clip) {
+  html, body { overflow: clip; }  /* 対応端末ではより強力に */
+}
+
+*{ box-sizing:border-box; }
+
+@media (max-width: 768px) and (pointer: coarse){
+  :root{
+    /* 下部の安全域も考慮して縦方向の上限でキャップ */
+    --ui-bottom: calc(22px + env(safe-area-inset-bottom));
+    --frame-h: min(92vmin, calc(100svh - 140px - var(--ui-bottom)));
+    /* ↑ 92vmin で基本大きくしつつ、画面の実高(svh)から
+       アイコン等の余白(約140px)を引いた値を上限にする */
+  } 
+} 
+html, body {
+  height: 100%;
+  overflow: hidden;          
+  overscroll-behavior: none; 
+  -webkit-overflow-scrolling: auto;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body{
+  background: var(--bg);
+  height: 100vh;           
+  overflow: hidden;       
+  position: fixed;
+  inset: 0;   
+}
+
+
+#scrubber{
+  position: fixed;
+  z-index: 10;         
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);   
+  display: grid;
+  place-items: center;
+  user-select: none;
+  cursor: ew-resize;
+  touch-action: none;         
+  -webkit-user-select: none;
+}
+#frame { max-height: var(--frame-h);  max-width: 92vw; height:auto; width:auto; }
+
+
+.frame{
+  /* ここが “一定に見える高さ” の肝 */
+  height: var(--frame-h);
+  max-width: 92vw;          
+  display: grid;
+  place-items: center;       
+}
+.frame img{
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;       
+}
+
+.loading{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  opacity: .7;
+  letter-spacing: .08em;
+  font-size: clamp(12px, 2.2vmin, 14px);
+}
+.loading.hidden{ display:none; }
+#info-btn {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom)); /* iPhone安全域も考慮 */
+  transform: translateX(-50%);
+  color: #ffffff;
+  font-family: sans-serif;
+  font-size: 15px;
+  line-height: 18px;
+  text-align: center;
+  text-decoration: none;
+  transition: 0.3s ease;
+  opacity: 0.7;
+  z-index: 50;                   /* 他要素より前に */
+  -webkit-tap-highlight-color: transparent; /* タップ時の灰色ハイライト除去 */
+  touch-action: manipulation;              /* iOSのクリック遅延防止 */
+}
+
+
+

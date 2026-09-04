@@ -1,27 +1,170 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Natsuki Oneyama">
-  <title>NATSUKI ONEYAMA MAKEUP ARTIST</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/x-icon" href="favicon.png" />
-  <link rel="apple-touch-icon" href="favicon.png">
+  <title>SCRUBBER_NATSUKI ONEYAMA</title>
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/tar7poy.css">
+  <link rel="stylesheet" href="scrubber.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
 </head>
+
 <body>
   <div id="scrubber">
     <div class="frame">
-    <img id="frame" alt="" decoding="async" />
-    <div class="loading" id="loader">loading…</div>
+<img id="frame"
+  src="img/01.webp"
+  data-path="img/"
+  data-start="1"
+  data-end="19"
+  data-pad="2"
+  data-ext="webp"
+  decoding="async"
+  loading="eager"
+  >
+   <div class="loading" id="loader">loading…</div>
     </div>
   </div>
 
-  <a href="info.html" id="info-btn" aria-label="Information">i</a>
+  <a href="../index.html" id="info-btn" aria-label="Back" onclick="closeWindow(event)">← Back</a>
 
-  <script src="script.js" defer></script>
+  
+
+<script src="scrubber.js" defer></script>
+<script>
+function closeWindow(e) {
+  e.preventDefault();
+  // 現在のタブを閉じる試行
+  window.open('', '_self'); // 自分自身を開く → window.close() を許可させる
+  window.close();
+
+  // もし閉じられなかった場合は fallback
+  setTimeout(() => {
+    if (!window.closed) {
+      window.location.href = "../index.html";
+    }
+  }, 200);
+}
+</script>
+<script>
+(() => {
+  const img = document.getElementById('frame');
+  if (!img) return;
+
+  const pad = (n, d) => String(n).padStart(d, '0');
+  const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const skip = sessionStorage.getItem('skipIntro') === '1';
+  sessionStorage.removeItem('skipIntro');
+
+  const path  = img.dataset.path  || '';
+  const start = parseInt(img.dataset.start || '1', 10);
+  const end   = parseInt(img.dataset.end   || '1', 10);
+  const padN  = parseInt(img.dataset.pad   || '2', 10);
+  const ext   = img.dataset.ext || 'webp';
+
+  const frames = [];
+  for (let i = start; i <= end; i++) frames.push(`${path}${pad(i, padN)}.${ext}`);
+
+  // 既存のスクラブ関数があれば尊重
+  const callExistingSetter = (i) => {
+    if (typeof window.scrubTo === 'function') { window.scrubTo(i); return true; }
+    if (typeof window.setFrame === 'function') { window.setFrame(i); return true; }
+    return false;
+  };
+
+  // イントロをスキップするケース
+  if (prefersReduced || skip) {
+    const src0 = frames[0];
+    if (!callExistingSetter(start)) img.src = src0;
+    return;
+  }
+
+  // 先頭フレームだけ即表示（白抜け防止）
+  if (!callExistingSetter(start)) img.src = frames[0];
+
+  // ---------- 重要：プリロード＋decode ----------
+  const MIN_READY = Math.min(12, Math.max(8, Math.ceil(frames.length / 3))); // 8〜12
+  const MAX_DECODE_WAIT = 1500; // ms
+
+  function preloadOne(src){
+    return new Promise((resolve) => {
+      const im = new Image();
+      im.decoding = 'async';
+      im.loading  = 'eager';
+      im.src = src;
+      let done = false;
+
+      const finish = () => { if (!done){ done = true; resolve(src); } };
+
+      im.addEventListener('load', async () => {
+        try {
+          const p = ('decode' in im) ? im.decode() : Promise.resolve();
+          await Promise.race([p, new Promise(r=>setTimeout(r, MAX_DECODE_WAIT))]);
+        } catch(_) {}
+        finish();
+      }, {once:true});
+      im.addEventListener('error', finish, {once:true});
+    });
+  }
+
+  (async function main(){
+    // 1) まず MIN_READY 枚そろえる
+    const prim = frames.slice(0, MIN_READY).map(preloadOne);
+    await Promise.all(prim);
+
+    // 2) rAFで再生（軽くて詰まらない）
+    const FPS = 8;
+    const STEP = 1000 / FPS;
+    let idx = 0, acc = 0, last = performance.now();
+    let rafId = 0;
+
+    const tick = (now) => {
+    const dt = now - last; last = now;
+    acc += dt;
+    if (acc >= STEP){
+    acc = 0;
+
+    // ★ 最後のフレームまで進んだらそれ以上増やさない
+    if (idx < frames.length - 1) {
+      idx++;
+    }
+
+    if (!callExistingSetter(start + idx)) {
+      const next = frames[idx];
+      if (img.src !== next) img.src = next;
+    }
+  }
+  rafId = requestAnimationFrame(tick);
+};
+rafId = requestAnimationFrame(tick);
+
+
+    // タブ切替で暴走しない
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) cancelAnimationFrame(rafId);
+      else { last = performance.now(); rafId = requestAnimationFrame(tick); }
+    });
+
+    // 3) 残りも裏で順次 decode（滑らかさが徐々に上がる）
+    for (const src of frames.slice(MIN_READY)) preloadOne(src);
+
+    // 4) 任意：数秒で静止（不要なら削除）
+    const DURATION = 3000;
+    setTimeout(() => {
+      cancelAnimationFrame(rafId);
+      if (!callExistingSetter(start)) img.src = frames[0];
+    }, DURATION);
+  })();
+})();
+</script>
+
+
 </body>
 </html>
 
